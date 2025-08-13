@@ -1,0 +1,330 @@
+const NameSelector = () => {
+    const [names, setNames] = React.useState(['bob', 'bob', 'john', 'name', 'name', 'bob']);
+    const [selectedName, setSelectedName] = React.useState('');
+    const [newName, setNewName] = React.useState('');
+    const [showDeleteOption, setShowDeleteOption] = React.useState(false);
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const [isSpinning, setIsSpinning] = React.useState(false);
+    const [singleName, setSingleName] = React.useState('');
+    const [repeatCount, setRepeatCount] = React.useState(1);
+
+    const selectRandomName = () => {
+        if (names.length === 0) {
+            alert('No names available to select!');
+            return;
+        }
+        
+        setIsSpinning(true);
+        setShowDeleteOption(false);
+        
+        // Show spinning for 2 seconds before revealing the name
+        setTimeout(() => {
+            const randomIndex = Math.floor(Math.random() * names.length);
+            const selected = names[randomIndex];
+            setSelectedName(selected);
+            setIsSpinning(false);
+            setShowDeleteOption(true);
+        }, 2000);
+    };
+
+    const deleteOneOccurrence = (nameToDelete) => {
+        const nameIndex = names.findIndex(name => name.toLowerCase() === nameToDelete.toLowerCase());
+        if (nameIndex !== -1) {
+            const updatedNames = [...names];
+            updatedNames.splice(nameIndex, 1);
+            setNames(updatedNames);
+        }
+    };
+
+    const deleteAllOccurrences = () => {
+        if (selectedName) {
+            const filteredNames = names.filter(name => name.toLowerCase() !== selectedName.toLowerCase());
+            setNames(filteredNames);
+            setSelectedName('');
+            setShowDeleteOption(false);
+        }
+    };
+
+    const addSingleName = () => {
+        if (singleName.trim() && repeatCount > 0 && repeatCount <= 50) {
+            const namesToAdd = Array(repeatCount).fill(singleName.trim());
+            setNames([...names, ...namesToAdd]);
+            setSingleName('');
+            setRepeatCount(1);
+        }
+    };
+
+    const addName = () => {
+        if (newName.trim()) {
+            // Split by commas, semicolons, or newlines and filter out empty strings
+            const namesToAdd = newName
+                .split(/[,;\n]/)
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+            
+            if (namesToAdd.length > 0) {
+                setNames([...names, ...namesToAdd]);
+                setNewName('');
+            }
+        }
+    };
+
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    // Extract all names from all columns and rows, flattening the array
+                    const extractedNames = jsonData
+                        .flat()
+                        .filter(cell => cell && typeof cell === 'string' && cell.trim())
+                        .map(name => name.trim());
+                    
+                    if (extractedNames.length > 0) {
+                        setNames(extractedNames);
+                        setSelectedName('');
+                        setShowDeleteOption(false);
+                    } else {
+                        alert('No valid names found in the Excel file.');
+                    }
+                } catch (error) {
+                    alert('Error reading Excel file. Please make sure it\'s a valid .xlsx or .xls file.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    };
+
+    const exportToExcel = () => {
+        const ws = XLSX.utils.aoa_to_sheet([[], ...names.map(name => [name])]);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Names');
+        XLSX.writeFile(wb, 'names_list.xlsx');
+    };
+
+    const clearAllNames = () => {
+        if (window.confirm('Are you sure you want to clear all names?')) {
+            setNames([]);
+            setSelectedName('');
+            setShowDeleteOption(false);
+        }
+    };
+
+    const getSearchResults = () => {
+        if (!searchTerm.trim()) return { matches: [], count: 0 };
+        
+        const searchLower = searchTerm.toLowerCase();
+        const matches = names.filter(name => 
+            name.toLowerCase().includes(searchLower)
+        );
+        
+        return { matches, count: matches.length };
+    };
+
+    const searchResults = getSearchResults();
+
+    return React.createElement('div', { className: "max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" },
+        React.createElement('h1', { className: "text-3xl font-bold text-center mb-8 text-gray-800" }, 'Random Name Selector'),
+        
+        // File Upload Section
+        React.createElement('div', { className: "mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg" },
+            React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
+                React.createElement(Upload, { className: "mr-2", size: 20 }),
+                'Upload Excel File'
+            ),
+            React.createElement('input', {
+                type: 'file',
+                accept: '.xlsx,.xls',
+                onChange: handleFileUpload,
+                className: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            }),
+            React.createElement('p', { className: "text-sm text-gray-600 mt-2" }, 'Upload an Excel file (.xlsx or .xls) containing names')
+        ),
+
+        // Manual Name Addition
+        React.createElement('div', { className: "mb-6 p-4 border rounded-lg bg-gray-50" },
+            React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
+                React.createElement(Plus, { className: "mr-2", size: 20 }),
+                'Add Names Manually'
+            ),
+            
+            // Single Name with Repeat Count
+            React.createElement('div', { className: "mb-4 p-3 bg-white rounded-lg border" },
+                React.createElement('h3', { className: "text-sm font-medium text-gray-700 mb-2" }, 'Add Single Name Multiple Times'),
+                React.createElement('div', { className: "flex gap-2 items-center" },
+                    React.createElement('input', {
+                        type: 'text',
+                        value: singleName,
+                        onChange: (e) => setSingleName(e.target.value),
+                        onKeyPress: (e) => e.key === 'Enter' && addSingleName(),
+                        placeholder: 'Enter a name',
+                        className: "flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    }),
+                    React.createElement('input', {
+                        type: 'number',
+                        value: repeatCount,
+                        onChange: (e) => setRepeatCount(Math.max(1, Math.min(50, parseInt(e.target.value) || 1))),
+                        min: 1,
+                        max: 50,
+                        className: "w-16 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-center"
+                    }),
+                    React.createElement('span', { className: "text-sm text-gray-600" }, 'times'),
+                    React.createElement('button', {
+                        onClick: addSingleName,
+                        disabled: !singleName.trim(),
+                        className: "px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center text-sm"
+                    },
+                        React.createElement(Plus, { size: 14, className: "mr-1" }),
+                        'Add'
+                    )
+                ),
+                React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, 'Add the same name 1-50 times at once')
+            ),
+
+            // Multiple Names Section  
+            React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
+                React.createElement('h3', { className: "text-sm font-medium text-gray-700 mb-2" }, 'Add Multiple Different Names'),
+                React.createElement('div', { className: "space-y-2" },
+                    React.createElement('textarea', {
+                        value: newName,
+                        onChange: (e) => setNewName(e.target.value),
+                        placeholder: 'Enter names (separate multiple names with commas, semicolons, or new lines)\nExample: John, Mary; Bob\nSarah',
+                        className: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none text-sm",
+                        rows: 3
+                    }),
+                    React.createElement('button', {
+                        onClick: addName,
+                        disabled: !newName.trim(),
+                        className: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
+                    },
+                        React.createElement(Plus, { size: 16, className: "mr-1" }),
+                        'Add Names'
+                    )
+                ),
+                React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, 'Separate with commas, semicolons, or new lines')
+            )
+        ),
+
+        // Search Section
+        React.createElement('div', { className: "mb-6 p-4 border rounded-lg bg-blue-50" },
+            React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
+                React.createElement(Search, { className: "mr-2", size: 20 }),
+                'Search Names'
+            ),
+            React.createElement('div', { className: "space-y-2" },
+                React.createElement('input', {
+                    type: 'text',
+                    value: searchTerm,
+                    onChange: (e) => setSearchTerm(e.target.value),
+                    placeholder: 'Search for a name...',
+                    className: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                }),
+                searchTerm.trim() && React.createElement('div', { className: "text-sm text-blue-700" },
+                    searchResults.count > 0 
+                        ? `Found ${searchResults.count} occurrence(s) of "${searchTerm}"`
+                        : `No matches found for "${searchTerm}"`
+                )
+            )
+        ),
+
+        // Current Names Display
+        React.createElement('div', { className: "mb-6" },
+            React.createElement('div', { className: "flex justify-between items-center mb-3" },
+                React.createElement('h2', { className: "text-lg font-semibold" }, `Current Names (${names.length})`),
+                React.createElement('div', { className: "flex gap-2" },
+                    React.createElement('button', {
+                        onClick: exportToExcel,
+                        className: "px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center text-sm",
+                        disabled: names.length === 0
+                    },
+                        React.createElement(Download, { size: 14, className: "mr-1" }),
+                        'Export'
+                    ),
+                    React.createElement('button', {
+                        onClick: clearAllNames,
+                        className: "px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center text-sm",
+                        disabled: names.length === 0
+                    },
+                        React.createElement(Trash2, { size: 14, className: "mr-1" }),
+                        'Clear All'
+                    )
+                )
+            ),
+            
+            names.length > 0 ?
+                React.createElement('div', { className: "bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto" },
+                    React.createElement('div', { className: "space-y-2" },
+                        names.map((name, index) =>
+                            React.createElement('div', { 
+                                key: `${name}-${index}`, 
+                                className: "bg-white px-3 py-2 rounded-lg text-sm border flex justify-between items-center" 
+                            },
+                                React.createElement('span', {}, name),
+                                React.createElement('button', {
+                                    onClick: () => deleteOneOccurrence(name),
+                                    className: "text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded",
+                                    title: "Delete this occurrence"
+                                },
+                                    React.createElement(X, { size: 16 })
+                                )
+                            )
+                        )
+                    )
+                ) :
+                React.createElement('p', { className: "text-gray-500 text-center py-8" }, 'No names available. Upload a file or add names manually.')
+        ),
+
+        // Random Selection
+        React.createElement('div', { className: "text-center mb-6" },
+            React.createElement('button', {
+                onClick: selectRandomName,
+                disabled: names.length === 0 || isSpinning,
+                className: "px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-lg font-semibold flex items-center mx-auto"
+            },
+                isSpinning 
+                    ? React.createElement(Loader, { className: "mr-2 animate-spin", size: 24 })
+                    : React.createElement(Shuffle, { className: "mr-2", size: 24 }),
+                isSpinning ? 'Selecting...' : 'Select Random Name'
+            )
+        ),
+
+        // Selected Name Display
+        (selectedName || isSpinning) && React.createElement('div', { className: "bg-yellow-100 border-l-4 border-yellow-500 p-6 mb-6" },
+            React.createElement('h3', { className: "text-xl font-semibold text-yellow-800 mb-4" }, 
+                isSpinning ? 'Selecting Random Name...' : 'Selected Name:'
+            ),
+            isSpinning 
+                ? React.createElement('div', { className: "text-center py-8" },
+                    React.createElement(Loader, { 
+                        className: "animate-spin mx-auto text-yellow-600", 
+                        size: 48 
+                    })
+                )
+                : React.createElement('div', {},
+                    React.createElement('div', { className: "text-3xl font-bold text-yellow-900 text-center mb-4" }, selectedName),
+                    
+                    showDeleteOption && React.createElement('div', { className: "text-center" },
+                        React.createElement('p', { className: "text-yellow-700 mb-3" },
+                            `Found ${names.filter(name => name.toLowerCase() === selectedName.toLowerCase()).length} occurrence(s) of "${selectedName}"`
+                        ),
+                        React.createElement('button', {
+                            onClick: deleteAllOccurrences,
+                            className: "px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center mx-auto"
+                        },
+                            React.createElement(Trash2, { className: "mr-2", size: 16 }),
+                            `Delete All Occurrences of "${selectedName}"`
+                        )
+                    )
+                )
+        )
+    );
+};
+
+ReactDOM.render(React.createElement(NameSelector), document.getElementById('root'));
