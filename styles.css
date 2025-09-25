@@ -8,11 +8,53 @@
     stroke-linejoin: round;
 }
 
-.animate-spin {
-    animation: spin 1s linear infinite;
+.spin-wheel {
+    animation: spin-wheel 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+@keyframes spin-wheel {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(180deg) scale(1.05); }
+    50% { transform: rotate(360deg) scale(1); }
+    75% { transform: rotate(540deg) scale(1.05); }
+    100% { transform: rotate(720deg) scale(1); }
+}
+
+.draw-wheel {
+    background: conic-gradient(
+        from 0deg,
+        #ff6b6b 0deg 45deg,
+        #4ecdc4 45deg 90deg,
+        #45b7d1 90deg 135deg,
+        #f7b731 135deg 180deg,
+        #5f27cd 180deg 225deg,
+        #00d2d3 225deg 270deg,
+        #ff9ff3 270deg 315deg,
+        #54a0ff 315deg 360deg
+    );
+    border: 8px solid #fff;
+    box-shadow: 0 0 0 4px #333, 0 0 30px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.draw-pointer {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 25px solid #333;
+    z-index: 10;
+}
+
+.quantity-input {
+    width: 60px;
+}
+
+body {
+    background-color: #f8fafc;
+    min-height: 100vh;
 }
