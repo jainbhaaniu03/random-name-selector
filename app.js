@@ -31,7 +31,7 @@ const NameSelector = () => {
         return flatArray;
     };
 
-    // Auto-download draw history
+    // Download draw history (manual only)
     const downloadDrawHistory = (history) => {
         if (history.length === 0) return;
         
@@ -80,9 +80,6 @@ const NameSelector = () => {
             };
             const updatedHistory = [...drawHistory, newDraw];
             setDrawHistory(updatedHistory);
-            
-            // Auto-download updated history
-            downloadDrawHistory(updatedHistory);
         }, 2000);
     };
 
@@ -268,10 +265,11 @@ const NameSelector = () => {
     }, [isSpinning, nameMap]);
 
     return React.createElement('div', { className: "max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" },
-        React.createElement('h1', { className: "text-3xl font-bold text-center mb-8 text-gray-800" }, 'Random Name Selector'),
+        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Raffle App'),
+        React.createElement('p', { className: "text-center text-sm text-gray-600 mb-8" }, 'By Bhaaniu Jain'),
         
         // Random Selection Section - Moved to top
-        React.createElement('div', { className: "mb-8 p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg border-2 border-purple-200" },
+        React.createElement('div', { className: "mb-8 p-6 event-background rounded-lg" },
             React.createElement('div', { className: "text-center mb-6" },
                 React.createElement('div', { className: "relative inline-block mb-6" },
                     React.createElement('div', { 
@@ -554,7 +552,7 @@ const NameSelector = () => {
                 ),
                 React.createElement('div', { className: "max-h-32 overflow-y-auto" },
                     React.createElement('div', { className: "space-y-1" },
-                        drawHistory.slice(-10).reverse().map((draw, index) => {
+                        drawHistory.slice(-30).reverse().map((draw, index) => {
                             const actualIndex = drawHistory.length - index;
                             return React.createElement('div', { 
                                 key: draw.timestamp,
@@ -571,7 +569,7 @@ const NameSelector = () => {
                     )
                 ),
                 React.createElement('p', { className: "text-xs text-green-600 mt-2" }, 
-                    '📥 Draw history automatically downloads after each draw • Showing last 10 draws'
+                    'Click Download button above to save history • Showing last 30 draws'
                 )
             )
         )
