@@ -65,17 +65,58 @@
 }
 
 .main-container {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive container adjustments */
+@media (max-width: 640px) {
+    .main-container {
+        margin: 1rem;
+        padding: 1rem !important;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .main-container {
+        margin: 1.5rem;
+    }
 }
 
 body {
     background-image: url('./poster.jpg');
-    background-size: cover;
-    background-position: center;
+    background-size: contain;
+    background-position: center top;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-color: #f0e6f9;
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Responsive background adjustments */
+@media (max-width: 768px) {
+    body {
+        background-size: 100% auto;
+        background-position: center top;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+    body {
+        background-size: 80% auto;
+        background-position: center top;
+    }
+}
+
+@media (min-width: 1201px) {
+    body {
+        background-size: 60% auto;
+        background-position: center top;
+    }
 }
 
 /* Fallback gradient overlay */
@@ -86,8 +127,16 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(232, 213, 247, 0.3) 0%, rgba(240, 230, 249, 0.3) 25%, rgba(212, 232, 247, 0.3) 50%, rgba(224, 242, 247, 0.3) 75%, rgba(245, 232, 247, 0.3) 100%);
-    z-index: -1;
+    background: linear-gradient(135deg, rgba(232, 213, 247, 0.2) 0%, rgba(240, 230, 249, 0.2) 25%, rgba(212, 232, 247, 0.2) 50%, rgba(224, 242, 247, 0.2) 75%, rgba(245, 232, 247, 0.2) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#root {
+    position: relative;
+    z-index: 1;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 .event-background {
