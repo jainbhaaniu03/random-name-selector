@@ -264,8 +264,8 @@ const NameSelector = () => {
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [isSpinning, nameMap]);
 
-    return React.createElement('div', { className: "max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" },
-        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Raffle App'),
+    return React.createElement('div', { className: "max-w-4xl mx-auto p-6 bg-white bg-opacity-75 backdrop-blur-md rounded-lg shadow-lg main-container" },
+        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Fundraising Dinner Raffle'),
         React.createElement('p', { className: "text-center text-sm text-gray-600 mb-8" }, 'By Bhaaniu Jain'),
         
         // Random Selection Section - Moved to top
@@ -320,7 +320,7 @@ const NameSelector = () => {
         ),
         
         // File Upload Section
-        React.createElement('div', { className: "mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors" },
+        React.createElement('div', { className: "mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors transparent-section" },
             React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
                 React.createElement(Upload, { className: "mr-2", size: 20 }),
                 'Upload Excel File'
@@ -335,14 +335,14 @@ const NameSelector = () => {
         ),
 
         // Manual Name Addition
-        React.createElement('div', { className: "mb-6 p-4 border rounded-lg bg-gray-50" },
+        React.createElement('div', { className: "mb-6 p-4 border rounded-lg transparent-section" },
             React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
                 React.createElement(Plus, { className: "mr-2", size: 20 }),
                 'Add Names Manually'
             ),
             
             // Single Name with Repeat Count
-            React.createElement('div', { className: "mb-4 p-3 bg-white rounded-lg border" },
+            React.createElement('div', { className: "mb-4 p-3 rounded-lg border transparent-box" },
                 React.createElement('h3', { className: "text-sm font-medium text-gray-700 mb-2" }, 'Add Single Name Multiple Times'),
                 React.createElement('div', { className: "flex gap-2 items-center" },
                     React.createElement('input', {
@@ -375,7 +375,7 @@ const NameSelector = () => {
             ),
 
             // Multiple Names Section  
-            React.createElement('div', { className: "p-3 bg-white rounded-lg border" },
+            React.createElement('div', { className: "p-3 rounded-lg border transparent-box" },
                 React.createElement('h3', { className: "text-sm font-medium text-gray-700 mb-2" }, 'Add Multiple Different Names'),
                 React.createElement('div', { className: "space-y-2" },
                     React.createElement('textarea', {
@@ -399,7 +399,7 @@ const NameSelector = () => {
         ),
 
         // Search Section
-        React.createElement('div', { className: "mb-6 p-4 border rounded-lg bg-blue-50" },
+        React.createElement('div', { className: "mb-6 p-4 border rounded-lg transparent-section" },
             React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
                 React.createElement(Search, { className: "mr-2", size: 20 }),
                 'Search & Edit Names'
@@ -487,7 +487,7 @@ const NameSelector = () => {
             ),
             
             nameMap.size > 0 ?
-                React.createElement('div', { className: "bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto" },
+                React.createElement('div', { className: "p-4 rounded-lg max-h-60 overflow-y-auto transparent-section" },
                     React.createElement('div', { className: "space-y-2" },
                         Array.from(nameMap.entries())
                             .sort(([a], [b]) => a.localeCompare(b))
@@ -536,9 +536,9 @@ const NameSelector = () => {
                 React.createElement('p', { className: "text-gray-500 text-center py-8" }, 'No names available. Upload a file or add names manually.'),
             
             // Draw History Section
-            drawHistory.length > 0 && React.createElement('div', { className: "mt-6 p-4 bg-green-50 rounded-lg border" },
+            drawHistory.length > 0 && React.createElement('div', { className: "mt-6 p-4 rounded-lg border transparent-section" },
                 React.createElement('div', { className: "flex items-center justify-between mb-3" },
-                    React.createElement('h3', { className: "text-lg font-semibold text-green-800 flex items-center" }, 
+                    React.createElement('h3', { className: "text-lg font-semibold text-gray-800 flex items-center" }, 
                         React.createElement(History, { className: "mr-2", size: 20 }),
                         `Draw History (${drawHistory.length} draws)`
                     ),
@@ -568,7 +568,7 @@ const NameSelector = () => {
                         })
                     )
                 ),
-                React.createElement('p', { className: "text-xs text-green-600 mt-2" }, 
+                React.createElement('p', { className: "text-xs text-gray-700 mt-2" }, 
                     'Click Download button above to save history • Showing last 30 draws'
                 )
             )
