@@ -56,7 +56,7 @@
 
 /* Transparent sections */
 .transparent-section {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.99);
     backdrop-filter: blur(3px);
 }
 
