@@ -54,32 +54,45 @@
     width: 60px;
 }
 
-body {
-    background-color: #f8fafc;
-    min-height: 100vh;
+/* Transparent sections */
+.transparent-section {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(3px);
 }
 
-.event-background {
-    background-image: url('./Invitation_Card_Front_Email.jpg');
+.transparent-box {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.main-container {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+}
+
+body {
+    background-image: url('./poster.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border: 3px solid #8b5cf6;
-    position: relative;
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
-.event-background::before {
+/* Fallback gradient overlay */
+body::before {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.85);
-    z-index: 0;
+    background: linear-gradient(135deg, rgba(232, 213, 247, 0.3) 0%, rgba(240, 230, 249, 0.3) 25%, rgba(212, 232, 247, 0.3) 50%, rgba(224, 242, 247, 0.3) 75%, rgba(245, 232, 247, 0.3) 100%);
+    z-index: -1;
 }
 
-.event-background > * {
+.event-background {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(5px);
+    border: 3px solid rgba(139, 92, 246, 0.5);
     position: relative;
-    z-index: 1;
 }
