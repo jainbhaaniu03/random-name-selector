@@ -96,8 +96,12 @@ body::before {
 #root {
     position: relative;
     z-index: 1;
-    padding-top: 2rem;
+    padding-top: 0;
     padding-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
 }
 
 /* Completely transparent sections */
@@ -136,11 +140,15 @@ body::before {
     .main-container {
         margin: 1rem;
         padding: 1rem !important;
+        max-width: 90%;
+        margin-top: 30vh !important;
     }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
     .main-container {
         margin: 1.5rem;
+        max-width: 70%;
+        margin-top: 28vh !important;
     }
 }
