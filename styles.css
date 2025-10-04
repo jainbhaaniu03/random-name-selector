@@ -141,7 +141,7 @@ body::before {
         margin: 1rem;
         padding: 1rem !important;
         max-width: 90%;
-        margin-top: 30vh !important;
+        margin-top: 40vh !important;
     }
 }
 
@@ -149,6 +149,6 @@ body::before {
     .main-container {
         margin: 1.5rem;
         max-width: 70%;
-        margin-top: 28vh !important;
+        margin-top: 38vh !important;
     }
 }
