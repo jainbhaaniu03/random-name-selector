@@ -269,7 +269,7 @@ const NameSelector = () => {
         React.createElement('p', { className: "text-center text-sm text-gray-600 mb-8" }, 'By Bhaaniu Jain'),
         
         // Random Selection Section - Moved to top
-        React.createElement('div', { className: "mb-8 p-6 rounded-lg" },
+        React.createElement('div', { className: "mb-8 p-6 event-background rounded-lg" },
             React.createElement('div', { className: "text-center mb-6" },
                 React.createElement('div', { className: "relative inline-block mb-6" },
                     React.createElement('div', { 
