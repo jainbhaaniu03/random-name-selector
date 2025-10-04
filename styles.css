@@ -152,3 +152,9 @@ body::before {
         margin-top: 38vh !important;
     }
 }
+@media (min-width: 1025px) {
+    .main-container {
+        /* Add a margin-top for large screens if needed, e.g., 20vh */
+        margin-top: 20vh !important;
+    }
+}
