@@ -54,43 +54,6 @@
     width: 60px;
 }
 
-/* Transparent sections */
-.transparent-section {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    border: none;
-}
-
-.transparent-box {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    border: none;
-}
-
-.main-container {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    box-shadow: none;
-    border: none;
-}
-
-/* Responsive container adjustments */
-@media (max-width: 640px) {
-    .main-container {
-        margin: 1rem;
-        padding: 1rem !important;
-    }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
-    .main-container {
-        margin: 1.5rem;
-    }
-}
-
 body {
     background-image: url('./test.jpg');
     background-size: contain;
@@ -125,17 +88,9 @@ body {
     }
 }
 
-/* Fallback gradient overlay */
+/* No overlay */
 body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(232, 213, 247, 0.2) 0%, rgba(240, 230, 249, 0.2) 25%, rgba(212, 232, 247, 0.2) 50%, rgba(224, 242, 247, 0.2) 75%, rgba(245, 232, 247, 0.2) 100%);
-    pointer-events: none;
-    z-index: 0;
+    content: none;
 }
 
 #root {
@@ -145,10 +100,47 @@ body::before {
     padding-bottom: 2rem;
 }
 
+/* Completely transparent sections */
+.transparent-section {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+}
+
+.transparent-box {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+}
+
+.main-container {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    border: none;
+}
+
 .event-background {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: none;
     position: relative;
+}
+
+/* Responsive container adjustments */
+@media (max-width: 640px) {
+    .main-container {
+        margin: 1rem;
+        padding: 1rem !important;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .main-container {
+        margin: 1.5rem;
+    }
 }
