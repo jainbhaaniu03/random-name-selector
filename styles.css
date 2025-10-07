@@ -145,16 +145,10 @@ body::before {
     }
 }
 
-@media (min-width: 641px) and (max-width: 1024px) {
+@media (min-width: 641px) {
     .main-container {
         margin: 1.5rem;
         max-width: 70%;
-        margin-top: 38vh !important;
-    }
-}
-@media (min-width: 1025px) {
-    .main-container {
-        /* Add a margin-top for large screens if needed, e.g., 20vh */
-        margin-top: 20vh !important;
+        margin-top: 35vh !important;
     }
 }
