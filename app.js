@@ -1187,7 +1187,7 @@ const NameSelector = () => {
                 ),
                 React.createElement('div', { className: "max-h-32 overflow-y-auto" },
                     React.createElement('div', { className: "space-y-1" },
-                        drawHistory.slice(50).reverse().map((draw, index) => {
+                        drawHistory.slice(-50).reverse().map((draw, index) => {
                             const actualIndex = drawHistory.length - index;
                             return React.createElement('div', { 
                                 key: draw.timestamp,
