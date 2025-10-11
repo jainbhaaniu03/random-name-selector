@@ -582,16 +582,12 @@ const NameSelector = () => {
         ['Jindas & Asha Shah-2', 1],
         ['Lalit & Shobha Shah-1', 1],
         ['Lalit & Shobha Shah-2', 1],
-        ['Narendra and Suhas Sheth-1', 1],
-        ['Narendra and Suhas Sheth-2', 1],
         ['Hiren and Radhika Shah-1', 1],
         ['Hiren and Radhika Shah-2', 1],
         ['Supriya and Subrat Satpathy-1', 1],
         ['Supriya and Subrat Satpathy-2', 1],
         ['Jayprakash & Bharti Shah-1', 1],
         ['Jayprakash & Bharti Shah-2', 1],
-        ['Deepak & Panna Shah-1', 1],
-        ['Deepak & Panna Shah-2', 1],
         ['Rahul and Lalitha Khimasia-1', 1],
         ['Rahul and Lalitha Khimasia-2', 1],
         ['Jinansh & Priya Shah-1', 1],
@@ -614,14 +610,17 @@ const NameSelector = () => {
         ['Rajiv & Reepal Shah-2', 1],
         ['Sanjay & Manisha Bhandari-1', 1],
         ['Sanjay & Manisha Bhandari-2', 1],
-        ['Rama haria-1', 1],
         ['Govind Gangrade-1', 1],
         ['Smita Kothari-1', 1],
         ['Priyank Vora-1', 1],
         ['Ankit Gupta-1', 1],
         ['Arihant Jain -1', 1],
         ['Kamal & Parul Tolia-1', 1],
+        ['Bhavesh & Ragini Kothari-1', 1],
+        ['Bhavesh & Ragini Kothari-2', 1],
+        ['Gaurav Jain-1', 1],
         ['Shantilal Shah (Amit Shah)-1', 1]
+        
     ]));
     const [selectedName, setSelectedName] = React.useState('');
     const [newName, setNewName] = React.useState('');
@@ -1188,7 +1187,7 @@ const NameSelector = () => {
                 ),
                 React.createElement('div', { className: "max-h-32 overflow-y-auto" },
                     React.createElement('div', { className: "space-y-1" },
-                        drawHistory.slice(-30).reverse().map((draw, index) => {
+                        drawHistory.slice(50).reverse().map((draw, index) => {
                             const actualIndex = drawHistory.length - index;
                             return React.createElement('div', { 
                                 key: draw.timestamp,
@@ -1205,7 +1204,7 @@ const NameSelector = () => {
                     )
                 ),
                 React.createElement('p', { className: "text-xs text-gray-700 mt-2" }, 
-                    'Click Download button above to save history • Showing last 30 draws'
+                    'Click Download button above to save history • Showing last 50 draws'
                 )
             )
         )
