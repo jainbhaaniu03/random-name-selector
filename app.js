@@ -867,7 +867,6 @@ const NameSelector = () => {
 
     const searchResults = getSearchResults();
 
-    
     // Handle keyboard shortcuts
     React.useEffect(() => {
         const handleKeyPress = (event) => {
@@ -883,23 +882,23 @@ const NameSelector = () => {
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [isSpinning, nameMap]);
 
-    // Prevent accidental page refresh
+    // Prevent accidental page refresh - ALWAYS WARN
     React.useEffect(() => {
         const handleBeforeUnload = (e) => {
-            // Always prevent if there's any data
-            if (drawHistory.length > 0 || nameMap.size > 0) {
-                const message = 'You have draw history and names loaded. Are you sure you want to leave?';
-                e.preventDefault();
-                e.returnValue = message;
-                return message;
-            }
+            const message = 'WARNING: You will lose all draw history and current data if you refresh!';
+            e.preventDefault();
+            e.returnValue = message;
+            return message;
         };
 
+        // Add listener immediately
         window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        // Clean up on unmount
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [drawHistory.length, nameMap.size]);
+    }, []); // Empty array means this runs once and stays active
 
     return React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container" },
         React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Fundraising Dinner Raffle'),
