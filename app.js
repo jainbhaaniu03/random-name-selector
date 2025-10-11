@@ -882,6 +882,20 @@ const NameSelector = () => {
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [isSpinning, nameMap]);
 
+    // Prevent accidental page refresh
+    React.useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (drawHistory.length > 0 || nameMap.size > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [drawHistory, nameMap]);
+
     return React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container" },
         React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Fundraising Dinner Raffle'),
         React.createElement('p', { className: "text-center text-sm text-gray-600 mb-8" }, 'By Bhaaniu Jain'),
