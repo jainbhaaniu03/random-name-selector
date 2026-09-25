@@ -1,7 +1,12 @@
-// Main Component
-const NameSelector = () => {
-    // UPDATED: Initial state loaded with all 620 unique raffle tickets from 'Raffle_Expanded.csv', each with a count of 1.
-    const [nameMap, setNameMap] = React.useState(new Map([
+// localStorage keys used to persist app state across page refreshes
+const STORAGE_KEYS = {
+    NAMES: 'raffleApp_nameMap',
+    HISTORY: 'raffleApp_drawHistory'
+};
+
+// The original hardcoded raffle ticket list. Used only the very first time the
+// app runs in a browser (i.e. when there's nothing saved in localStorage yet).
+const DEFAULT_NAME_ENTRIES = [
         ['Arvin & Jaya Shah-1', 1],
         ['Arvin & Jaya Shah-2', 1],
         ['Arvin & Jaya Shah-3', 1],
@@ -620,8 +625,24 @@ const NameSelector = () => {
         ['Bhavesh & Ragini Kothari-2', 1],
         ['Gaurav Jain-1', 1],
         ['Shantilal Shah (Amit Shah)-1', 1]
-        
-    ]));
+];
+
+// Main Component
+const NameSelector = () => {
+    // Load nameMap from localStorage if it exists, otherwise fall back to the
+    // default hardcoded list. Using the lazy-init form of useState so this only
+    // runs once, on first mount.
+    const [nameMap, setNameMap] = React.useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEYS.NAMES);
+            if (saved) {
+                return new Map(JSON.parse(saved));
+            }
+        } catch (error) {
+            console.error('Failed to load saved names, using defaults:', error);
+        }
+        return new Map(DEFAULT_NAME_ENTRIES);
+    });
     const [selectedName, setSelectedName] = React.useState('');
     const [newName, setNewName] = React.useState('');
     const [showDeleteOption, setShowDeleteOption] = React.useState(false);
@@ -630,7 +651,18 @@ const NameSelector = () => {
     const [singleName, setSingleName] = React.useState('');
     const [repeatCount, setRepeatCount] = React.useState(1);
     const [selectedForDelete, setSelectedForDelete] = React.useState(new Set());
-    const [drawHistory, setDrawHistory] = React.useState([]);
+    // Load draw history from localStorage the same way
+    const [drawHistory, setDrawHistory] = React.useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEYS.HISTORY);
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('Failed to load saved draw history:', error);
+        }
+        return [];
+    });
 
     // Get total count of all names
     const getTotalNames = () => {
@@ -866,6 +898,24 @@ const NameSelector = () => {
 
     const searchResults = getSearchResults();
 
+    // Persist nameMap to localStorage whenever it changes
+    React.useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEYS.NAMES, JSON.stringify(Array.from(nameMap.entries())));
+        } catch (error) {
+            console.error('Failed to save names to localStorage:', error);
+        }
+    }, [nameMap]);
+
+    // Persist draw history to localStorage whenever it changes
+    React.useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(drawHistory));
+        } catch (error) {
+            console.error('Failed to save draw history to localStorage:', error);
+        }
+    }, [drawHistory]);
+
     // Handle keyboard shortcuts
     React.useEffect(() => {
         const handleKeyPress = (event) => {
@@ -881,23 +931,10 @@ const NameSelector = () => {
         return () => document.removeEventListener('keydown', handleKeyPress);
     }, [isSpinning, nameMap]);
 
-    // Prevent accidental page refresh - ALWAYS WARN
-    React.useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            const message = 'WARNING: You will lose all draw history and current data if you refresh!';
-            e.preventDefault();
-            e.returnValue = message;
-            return message;
-        };
-
-        // Add listener immediately
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        
-        // Clean up on unmount
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []); // Empty array means this runs once and stays active
+    // NOTE: Data is now saved to localStorage automatically (see the two
+    // useEffect hooks above), so refreshing the page no longer loses the
+    // name list or draw history. The old "are you sure you want to leave"
+    // warning has been removed since it's no longer accurate.
 
     return React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container" },
         React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Fundraising Dinner Raffle'),
