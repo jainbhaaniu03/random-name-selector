@@ -852,6 +852,26 @@ const NameSelector = () => {
         }
     };
 
+    const clearDrawHistory = () => {
+        if (window.confirm('Are you sure you want to clear the draw history? This action cannot be undone.')) {
+            setDrawHistory([]);
+        }
+    };
+
+    const resetToDefaults = () => {
+        if (window.confirm('Reset everything to the default name list? This will erase your current names, draw history, and any saved changes. This action cannot be undone.')) {
+            setNameMap(new Map(DEFAULT_NAME_ENTRIES));
+            setDrawHistory([]);
+            setSelectedName('');
+            setNewName('');
+            setShowDeleteOption(false);
+            setSearchTerm('');
+            setSingleName('');
+            setRepeatCount(1);
+            setSelectedForDelete(new Set());
+        }
+    };
+
     const toggleSelectForDelete = (name) => {
         const newSelected = new Set(selectedForDelete);
         if (newSelected.has(name)) {
@@ -1154,6 +1174,13 @@ const NameSelector = () => {
                     },
                         React.createElement(Trash2, { size: 14, className: "mr-1" }),
                         'Clear All'
+                    ),
+                    React.createElement('button', {
+                        onClick: resetToDefaults,
+                        className: "px-3 py-1 bg-gray-700 text-white rounded-md hover:bg-gray-800 flex items-center text-sm transition-colors"
+                    },
+                        React.createElement(RotateCcw, { size: 14, className: "mr-1" }),
+                        'Reset to Default'
                     )
                 )
             ),
@@ -1214,12 +1241,21 @@ const NameSelector = () => {
                         React.createElement(History, { className: "mr-2", size: 20 }),
                         `Draw History (${drawHistory.length} draws)`
                     ),
-                    React.createElement('button', {
-                        onClick: () => downloadDrawHistory(drawHistory),
-                        className: "px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center text-sm transition-colors"
-                    },
-                        React.createElement(Download, { size: 14, className: "mr-1" }),
-                        'Download'
+                    React.createElement('div', { className: "flex items-center gap-2" },
+                        React.createElement('button', {
+                            onClick: () => downloadDrawHistory(drawHistory),
+                            className: "px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center text-sm transition-colors"
+                        },
+                            React.createElement(Download, { size: 14, className: "mr-1" }),
+                            'Download'
+                        ),
+                        React.createElement('button', {
+                            onClick: clearDrawHistory,
+                            className: "px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center text-sm transition-colors"
+                        },
+                            React.createElement(Trash2, { size: 14, className: "mr-1" }),
+                            'Clear History'
+                        )
                     )
                 ),
                 React.createElement('div', { className: "max-h-32 overflow-y-auto" },
