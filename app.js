@@ -509,8 +509,8 @@ const NameSelector = () => {
     // warning has been removed since it's no longer accurate.
 
     return React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container" },
-        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, "Bhaaniu Jain Presents"),
-        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, ' JSGD Fundraising Dinner Raffle'),
+        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, 'JSGD Fundraising Dinner Raffle'),
+        React.createElement('p', { className: "text-center text-sm text-gray-600 mb-8" }, 'By Bhaaniu Jain'),
         
         // Random Selection Section - Moved to top
         React.createElement('div', { className: "mb-8 p-6 event-background rounded-lg" },
@@ -522,6 +522,44 @@ const NameSelector = () => {
                         React.createElement('div', { className: "draw-pointer" })
                     )
                 ),
+
+                // Selected Name Display — placed right under the wheel, before the button,
+                // so the drawn name/spinning status appears immediately below it.
+                (selectedName || isSpinning) && React.createElement('div', { className: "border-l-4 border-yellow-500 p-6 rounded-r-lg mb-6 text-left" },
+                    React.createElement('h3', { className: "text-xl font-semibold text-yellow-800 mb-4" }, 
+                        isSpinning ? 'Drawing Random Name...' : '🎉 Winner:'
+                    ),
+                    isSpinning 
+                        ? React.createElement('div', { className: "text-center py-4" },
+                            React.createElement('div', { className: "text-lg text-yellow-700" }, 'Spinning the wheel...')
+                        )
+                        : React.createElement('div', {},
+                            React.createElement('div', { className: "text-3xl font-bold text-yellow-900 text-center mb-4" }, selectedName),
+                            
+                            showDeleteOption && React.createElement('div', { className: "text-center" },
+                                React.createElement('p', { className: "text-yellow-700 mb-3" },
+                                    `"${selectedName}" has ${nameMap.get(selectedName) || 0} occurrence(s) remaining`
+                                ),
+                                React.createElement('div', { className: "flex items-center justify-center gap-3" },
+                                    React.createElement('button', {
+                                        onClick: removeOneOccurrence,
+                                        className: "px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center transition-colors"
+                                    },
+                                        React.createElement(Minus, { className: "mr-2", size: 16 }),
+                                        'Remove 1 Occurrence'
+                                    ),
+                                    React.createElement('button', {
+                                        onClick: deleteAllOccurrences,
+                                        className: "px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center transition-colors"
+                                    },
+                                        React.createElement(Trash2, { className: "mr-2", size: 16 }),
+                                        `Remove All "${selectedName}"`
+                                    )
+                                )
+                            )
+                        )
+                ),
+
                 React.createElement('button', {
                     onClick: selectRandomName,
                     disabled: getTotalNames() === 0 || isSpinning,
@@ -533,42 +571,6 @@ const NameSelector = () => {
                 getTotalNames() > 0 && React.createElement('p', { className: "text-sm text-gray-600 mt-2" },
                     `Ready to draw from ${getTotalNames()} entries • Press Ctrl+Enter`
                 )
-            ),
-
-            // Selected Name Display
-            (selectedName || isSpinning) && React.createElement('div', { className: "border-l-4 border-yellow-500 p-6 rounded-r-lg" },
-                React.createElement('h3', { className: "text-xl font-semibold text-yellow-800 mb-4" }, 
-                    isSpinning ? 'Drawing Random Name...' : '🎉 Winner:'
-                ),
-                isSpinning 
-                    ? React.createElement('div', { className: "text-center py-4" },
-                        React.createElement('div', { className: "text-lg text-yellow-700" }, 'Spinning the wheel...')
-                    )
-                    : React.createElement('div', {},
-                        React.createElement('div', { className: "text-3xl font-bold text-yellow-900 text-center mb-4" }, selectedName),
-                        
-                        showDeleteOption && React.createElement('div', { className: "text-center" },
-                            React.createElement('p', { className: "text-yellow-700 mb-3" },
-                                `"${selectedName}" has ${nameMap.get(selectedName) || 0} occurrence(s) remaining`
-                            ),
-                            React.createElement('div', { className: "flex items-center justify-center gap-3" },
-                                React.createElement('button', {
-                                    onClick: removeOneOccurrence,
-                                    className: "px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center transition-colors"
-                                },
-                                    React.createElement(Minus, { className: "mr-2", size: 16 }),
-                                    'Remove 1 Occurrence'
-                                ),
-                                React.createElement('button', {
-                                    onClick: deleteAllOccurrences,
-                                    className: "px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center transition-colors"
-                                },
-                                    React.createElement(Trash2, { className: "mr-2", size: 16 }),
-                                    `Remove All "${selectedName}"`
-                                )
-                            )
-                        )
-                    )
             )
         ),
         
