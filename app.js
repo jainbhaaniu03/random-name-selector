@@ -509,8 +509,8 @@ const NameSelector = () => {
     // warning has been removed since it's no longer accurate.
 
     return React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container" },
-        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, "Bhaaniu's JSGD Fundraising Dinner Raffle"),
-        React.createElement('h1', { className: "text-center text-sm text-gray-600 mb-8" }, 'By Bhaaniu Jain'),
+        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, "Bhaaniu Jain Presents"),
+        React.createElement('h1', { className: "text-3xl font-bold text-center mb-2 text-gray-800" }, ' JSGD Fundraising Dinner Raffle'),
         
         // Random Selection Section - Moved to top
         React.createElement('div', { className: "mb-8 p-6 event-background rounded-lg" },
