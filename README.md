@@ -9,7 +9,8 @@ A simple, web-based tool for randomly selecting names from a customizable list. 
 - **Bulk Name Addition** - Add the same name multiple times (1-50 repetitions)
 - **Smart Name Parsing** - Automatically separates names using commas, semicolons, or line breaks
 - **Search Functionality** - Find and count occurrences of specific names
-- **Random Selection with Animation** - Engaging 2-second spin animation before revealing the selected name
+- **Name Wheel** - A spinning wheel with every name on its own slice; slices, label size, and wheel size adjust automatically as names are added or removed
+- **Random Selection with Animation** - ~6-second spin with easing, a ticking pointer, a live "name under the pointer" readout, a winner spotlight, and confetti
 - **Selective Deletion** - Remove individual occurrences or all instances of a name
 - **Export to Excel** - Download your name list as an Excel file
 - **Responsive Design** - Works on desktop, tablet, and mobile devices
@@ -39,7 +40,7 @@ A simple, web-based tool for randomly selecting names from a customizable list. 
 ### 3. Random Selection
 
 - Click "Select Random Name" to start the selection process
-- Watch the 2-second animation as it "spins" through options
+- Watch the wheel spin and slow down onto the winner's slice
 - The selected name appears with options to delete all occurrences of that name
 
 ## 🔧 Technical Details

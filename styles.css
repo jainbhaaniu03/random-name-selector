@@ -8,46 +8,49 @@
     stroke-linejoin: round;
 }
 
-.spin-wheel {
-    animation: spin-wheel 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Name wheel */
+.name-wheel-wrap {
+    text-align: center;
 }
 
-@keyframes spin-wheel {
-    0% { transform: rotate(0deg) scale(1); }
-    25% { transform: rotate(180deg) scale(1.05); }
-    50% { transform: rotate(360deg) scale(1); }
-    75% { transform: rotate(540deg) scale(1.05); }
-    100% { transform: rotate(720deg) scale(1); }
-}
-
-.draw-wheel {
-    background: conic-gradient(
-        from 0deg,
-        #ff6b6b 0deg 45deg,
-        #4ecdc4 45deg 90deg,
-        #45b7d1 90deg 135deg,
-        #f7b731 135deg 180deg,
-        #5f27cd 180deg 225deg,
-        #00d2d3 225deg 270deg,
-        #ff9ff3 270deg 315deg,
-        #54a0ff 315deg 360deg
-    );
-    border: 8px solid #fff;
-    box-shadow: 0 0 0 4px #333, 0 0 30px rgba(0,0,0,0.3);
+.name-wheel {
     position: relative;
+    margin: 0 auto;
 }
 
-.draw-pointer {
+.wheel-pointer {
     position: absolute;
-    top: -15px;
+    top: -4px;
     left: 50%;
     transform: translateX(-50%);
+    transform-origin: 50% 0;
     width: 0;
     height: 0;
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
-    border-top: 25px solid #333;
+    border-top: 32px solid #2b2b2b;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
     z-index: 10;
+}
+
+.wheel-live-label {
+    min-height: 2rem;
+    margin: 0.5rem auto 0;
+    max-width: 100%;
+    padding: 0.2rem 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #4c1d95;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 9999px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.wheel-live-label:empty {
+    visibility: hidden;
 }
 
 .quantity-input {

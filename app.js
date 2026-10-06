@@ -181,6 +181,7 @@ const NameSelector = () => {
         }
         return new Map(DEFAULT_NAME_ENTRIES);
     });
+    const wheelRef = React.useRef(null);
     const [selectedName, setSelectedName] = React.useState('');
     const [newName, setNewName] = React.useState('');
     const [showDeleteOption, setShowDeleteOption] = React.useState(false);
@@ -201,6 +202,9 @@ const NameSelector = () => {
         }
         return [];
     });
+
+    // One wheel slice per unique name (the wheel redraws itself when this changes)
+    const wheelNames = Array.from(nameMap.keys());
 
     // Get total count of all names
     const getTotalNames = () => {
@@ -252,22 +256,24 @@ const NameSelector = () => {
         
         setIsSpinning(true);
         setShowDeleteOption(false);
-        
-        setTimeout(() => {
-            const randomIndex = Math.floor(Math.random() * flatNames.length);
-            const selected = flatNames[randomIndex];
+
+        // Pick the winner up front (still weighted by ticket count), then let the
+        // wheel animate to that name's slice.
+        const randomIndex = Math.floor(Math.random() * flatNames.length);
+        const selected = flatNames[randomIndex];
+
+        wheelRef.current.spinTo(selected, () => {
             setSelectedName(selected);
             setIsSpinning(false);
             setShowDeleteOption(true);
-            
+
             // Add to draw history
             const newDraw = {
                 name: selected,
                 timestamp: Date.now()
             };
-            const updatedHistory = [...drawHistory, newDraw];
-            setDrawHistory(updatedHistory);
-        }, 2000);
+            setDrawHistory(prev => [...prev, newDraw]);
+        });
     };
 
     const updateNameQuantity = (name, newQuantity) => {
@@ -515,12 +521,8 @@ const NameSelector = () => {
         // Random Selection Section - Moved to top
         React.createElement('div', { className: "mb-8 p-6 event-background rounded-lg" },
             React.createElement('div', { className: "text-center mb-6" },
-                React.createElement('div', { className: "relative inline-block mb-6" },
-                    React.createElement('div', { 
-                        className: `w-32 h-32 rounded-full draw-wheel mx-auto ${isSpinning ? 'spin-wheel' : ''}` 
-                    },
-                        React.createElement('div', { className: "draw-pointer" })
-                    )
+                React.createElement('div', { className: "mb-6" },
+                    React.createElement(NameWheel, { ref: wheelRef, names: wheelNames })
                 ),
 
                 // Selected Name Display — placed right under the wheel, before the button,
