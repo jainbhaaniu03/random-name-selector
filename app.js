@@ -695,11 +695,8 @@ const handleFileUpload = (event) => {
 
         // Current Names Display
         React.createElement('div', { className: "mb-6" },
-            React.createElement('div', { className: "flex justify-between items-center mb-3" },
-                React.createElement('h2', { className: "text-lg font-semibold" }, 
-                    `Current Names (${nameMap.size} unique, ${getTotalNames()} raffle tickets)`
-                ),
-                React.createElement('div', { className: "flex gap-2 flex-wrap" },
+            React.createElement('div', { className: "mb-3" },
+                React.createElement('div', { className: "flex gap-2 flex-wrap mb-3" },
                     nameMap.size > 0 && React.createElement('button', {
                         onClick: selectAllForDelete,
                         className: "px-2 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 flex items-center text-xs transition-colors"
@@ -736,6 +733,9 @@ const handleFileUpload = (event) => {
                         React.createElement(RotateCcw, { size: 14, className: "mr-1" }),
                         'Reset Raffle Count'
                     )
+                ),
+                React.createElement('h2', { className: "text-lg font-semibold" }, 
+                    `Current Names (${nameMap.size} unique, ${getTotalNames()} raffle tickets)`
                 )
             ),
             
