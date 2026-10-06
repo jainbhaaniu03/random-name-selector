@@ -561,7 +561,7 @@ const handleFileUpload = (event) => {
     // warning has been removed since it's no longer accurate.
 
     return React.createElement(React.Fragment, null,
-    React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container", style: { paddingBottom: '56px' } },
+    React.createElement('div', { className: "max-w-4xl mx-auto p-6 rounded-lg main-container", style: { paddingBottom: '90px' } },
         React.createElement('h1', { className: "text-3xl font-bold text-center mb-4 text-gray-800" }, 'JSGD Fundraising Dinner Raffle'),
 
         // Random Selection Section
@@ -621,13 +621,13 @@ const handleFileUpload = (event) => {
                         )
                     )
                 ),
-                React.createElement('div', { className: "max-h-32 overflow-y-auto" },
-                    React.createElement('div', { className: "space-y-1" },
+                React.createElement('div', { className: "overflow-y-auto", style: { maxHeight: '260px' } }, // fits 10 rows
+                    React.createElement('div', { className: "space-y-0.5" },
                         drawHistory.slice(-50).reverse().map((draw, index) => {
                             const actualIndex = drawHistory.length - index;
                             return React.createElement('div', { 
                                 key: draw.timestamp,
-                                className: "text-sm flex justify-between items-center px-3 py-1 rounded transparent-box"
+                                className: "text-sm flex justify-between items-center px-3 py-0.5 rounded transparent-box"
                             },
                                 React.createElement('span', { className: "font-medium" }, 
                                     `${actualIndex}. ${draw.name}`
@@ -663,11 +663,11 @@ const handleFileUpload = (event) => {
                         ? `Found ${searchResults.matches.length} name(s) with ${searchResults.count} total raffle tickets`
                         : `No matches found for "${searchTerm}"`
                 ),
-                searchTerm.trim() && searchResults.matches.length > 0 && React.createElement('div', { className: "space-y-2 mt-3" },
+                searchTerm.trim() && searchResults.matches.length > 0 && React.createElement('div', { className: "space-y-1 mt-3" },
                     searchResults.matches.map(([name, count]) =>
                         React.createElement('div', { 
                             key: name,
-                            className: "px-3 py-2 rounded-lg flex justify-between items-center transparent-box"
+                            className: "px-3 py-1.5 rounded-lg flex justify-between items-center transparent-box"
                         },
                             React.createElement('span', { className: "font-medium" }, `${name} (${count} raffle ticket${count === 1 ? '' : 's'})`),
                             React.createElement('div', { className: "flex items-center gap-2" },
@@ -741,13 +741,13 @@ const handleFileUpload = (event) => {
             
             nameMap.size > 0 ?
                 React.createElement('div', { className: "p-4 rounded-lg max-h-60 overflow-y-auto transparent-section" },
-                    React.createElement('div', { className: "space-y-2" },
+                    React.createElement('div', { className: "space-y-1" },
                         Array.from(nameMap.entries())
                             .sort(([a], [b]) => a.localeCompare(b))
                             .map(([name, count]) =>
                             React.createElement('div', { 
                                 key: name,
-                                className: `px-3 py-2 rounded-lg text-sm flex justify-between items-center transition-colors transparent-box ${selectedForDelete.has(name) ? 'bg-red-100 bg-opacity-50' : ''}`
+                                className: `px-3 py-1.5 rounded-lg text-sm flex justify-between items-center transition-colors transparent-box ${selectedForDelete.has(name) ? 'bg-red-100 bg-opacity-50' : ''}`
                             },
                                 React.createElement('div', { className: "flex items-center gap-2" },
                                     React.createElement('input', {
@@ -881,8 +881,8 @@ const handleFileUpload = (event) => {
     ),
     // Fixed credit in the bottom-right corner
     React.createElement('div', {
-        style: { position: 'fixed', right: '10px', bottom: '8px', zIndex: 40, padding: '4px 12px', fontSize: '15px', color: '#374151', background: 'rgba(255,255,255,0.8)', borderRadius: '9999px', pointerEvents: 'none' }
-    }, 'Designed and developed by Bhaaniu Jain')
+        style: { position: 'fixed', right: '10px', bottom: '8px', zIndex: 40, padding: '6px 14px', fontSize: '18px', fontWeight: 600, lineHeight: 1.25, textAlign: 'right', color: '#374151', background: 'rgba(255,255,255,0.8)', borderRadius: '12px', pointerEvents: 'none' }
+    }, 'Designed and developed', React.createElement('br'), 'by Bhaaniu Jain')
     );
 };
 
