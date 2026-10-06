@@ -881,7 +881,7 @@ const handleFileUpload = (event) => {
     ),
     // Fixed credit in the bottom-right corner
     React.createElement('div', {
-        style: { position: 'fixed', right: '10px', bottom: '8px', zIndex: 40, padding: '3px 10px', fontSize: '12px', color: '#374151', background: 'rgba(255,255,255,0.8)', borderRadius: '9999px', pointerEvents: 'none' }
+        style: { position: 'fixed', right: '10px', bottom: '8px', zIndex: 40, padding: '4px 12px', fontSize: '15px', color: '#374151', background: 'rgba(255,255,255,0.8)', borderRadius: '9999px', pointerEvents: 'none' }
     }, 'Designed and developed by Bhaaniu Jain')
     );
 };
