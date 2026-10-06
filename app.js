@@ -341,45 +341,55 @@ const NameSelector = () => {
         }
     };
 
-    const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                
-                const extractedNames = jsonData
-                    .flat()
-                    .filter(cell => cell && typeof cell === 'string' && cell.trim())
-                    .map(name => String(name).trim());
-                
-                if (extractedNames.length > 0) {
-                    const newMap = new Map();
-                    extractedNames.forEach(name => {
-                        const currentCount = newMap.get(name) || 0;
-                        newMap.set(name, currentCount + 1);
-                    });
-                    setNameMap(newMap);
-                    setSelectedName('');
-                    setShowDeleteOption(false);
-                    // Clear file input
-                    event.target.value = '';
-                } else {
-                    alert('No valid names found in the Excel file.');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            
+            // Read sheet data as an array of rows (2D array)
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            
+            const newMap = new Map();
+
+            // Loop through each row to extract Name (Col 0) and Count (Col 1)
+            jsonData.forEach(row => {
+                const nameCell = row[0];
+                const countCell = row[1];
+
+                if (nameCell && typeof nameCell === 'string' && nameCell.trim()) {
+                    const name = nameCell.trim();
+                    // Parse the count from the second column, defaulting to 1 if missing or invalid
+                    const count = parseInt(countCell, 10) || 1;
+
+                    // Add to existing count if the name appears multiple times in the file
+                    const currentCount = newMap.get(name) || 0;
+                    newMap.set(name, currentCount + count);
                 }
-            } catch (error) {
-                console.error('File upload error:', error);
-                alert('Error reading Excel file. Please make sure it\'s a valid .xlsx or .xls file.');
+            });
+
+            if (newMap.size > 0) {
+                setNameMap(newMap);
+                setSelectedName('');
+                setShowDeleteOption(false);
+                // Clear file input
+                event.target.value = '';
+            } else {
+                alert('No valid names found in the Excel file.');
             }
-        };
-        reader.readAsArrayBuffer(file);
+        } catch (error) {
+            console.error('File upload error:', error);
+            alert('Error reading Excel file. Please make sure it\'s a valid .xlsx or .xls file.');
+        }
     };
+    reader.readAsArrayBuffer(file);
+};
 
     const exportToExcel = () => {
         if (nameMap.size === 0) {
