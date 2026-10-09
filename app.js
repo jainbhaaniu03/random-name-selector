@@ -4,10 +4,6 @@ const STORAGE_KEYS = {
     HISTORY: 'raffleApp_drawHistory'
 };
 
-// Default raffle list (from Raffle_List_10_6_2026_as_of_4_PM.xlsx): one entry per
-// person/couple with the number of raffle tickets they have. People without a
-// ticket number in that file are not included. Used the very first time the app
-// runs in a browser (nothing saved in localStorage yet) and by the reset buttons.
 const DEFAULT_NAME_ENTRIES = [
         ['Nimesh & Rinku Shah', 20],
         ['Chetan & Smita Koradia', 20],
@@ -180,9 +176,6 @@ const NameSelector = () => {
         return new Map(DEFAULT_NAME_ENTRIES);
     });
     const wheelRef = React.useRef(null);
-    // Name whose last ticket was just drawn. It's removed from the list right away,
-    // but kept on the wheel (at its old position) until the next draw so the winning
-    // slice stays highlighted after it lands.
     const [ghost, setGhost] = React.useState(null);
     const [pendingSpin, setPendingSpin] = React.useState(null);
     const [selectedName, setSelectedName] = React.useState('');
@@ -192,7 +185,6 @@ const NameSelector = () => {
     const [singleName, setSingleName] = React.useState('');
     const [repeatCount, setRepeatCount] = React.useState(1);
     const [selectedForDelete, setSelectedForDelete] = React.useState(new Set());
-    // Load draw history from localStorage the same way
     const [drawHistory, setDrawHistory] = React.useState(() => {
         try {
             const saved = localStorage.getItem(STORAGE_KEYS.HISTORY);
