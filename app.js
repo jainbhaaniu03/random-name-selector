@@ -80,7 +80,7 @@ const DEFAULT_NAME_ENTRIES = [
         ['Kamal & Paru Tolia', 4],
         ['Kamal & Sunitha Jain', 4],
         ['Kandarp & Indu Doshi', 4],
-        ['Ketan & Janki Shah', 0],
+        ['Ketan & Janki Shah', 6],
         ['Kirit & Parindu Sheth', 4],
         ['Kirit & Vasu Tolia', 8],
         ['Kritesh & Hiral Mehta', 4],
