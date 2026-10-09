@@ -22,6 +22,7 @@ const DEFAULT_NAME_ENTRIES = [
         ['Arvin & Jaya Shah', 20],
         ['Ashish & Minal Manek', 4],
         ['Ashok & Asha Jain', 4],
+        ['Ashok & Namita Jain', 6],
         ['Ashoka & Kirti Jain', 4],
         ['Ashokbhai Shah', 2],
         ['Ashwin Parekh', 2],
