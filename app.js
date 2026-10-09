@@ -4,6 +4,28 @@ const STORAGE_KEYS = {
     HISTORY: 'raffleApp_drawHistory'
 };
 
+// ---------------------------------------------------------------------------
+// Passwords
+// Two separate passwords: one to open the site, one to turn on Dev Mode.
+// NOTE: this runs in the browser, so it's a soft lock, not real security
+// (anyone who reads the page source can see the hashes and could guess weak
+// passwords). To change a password, open set-password.html, pick Site or Dev,
+// type the new password, and paste the hash it shows below.
+// ---------------------------------------------------------------------------
+const SITE_PASSWORD_HASH = '6a89264f1200b0e5fa6eacbe729fb6a50a0172cae7cb49bf8eadc2179a5db5a3'; // temporary site password: Raffle-Temp-2026 (change it!)
+const DEV_PASSWORD_HASH = 'fe7fe6c415ae15bfe3afe3b1491567f6dc70db3459e447498cd09ede22211dba';  // temporary dev password: Dev-Temp-2026 (change it!)
+
+const hashPassword = async (kind, text) => {
+    const bytes = new TextEncoder().encode(`jsgd-raffle:${kind}:${text}`);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+// Fixed credit in the bottom-right corner (shown on every screen)
+const creditFooter = React.createElement('div', {
+    style: { position: 'fixed', right: '10px', bottom: '8px', zIndex: 40, padding: '6px 14px', fontSize: '18px', fontWeight: 600, lineHeight: 1.25, textAlign: 'right', color: '#374151', background: 'rgba(255,255,255,0.8)', borderRadius: '12px', pointerEvents: 'none' }
+}, 'Designed and developed', React.createElement('br'), 'by Bhaaniu Jain');
+
 const DEFAULT_NAME_ENTRIES = [
         ['Aarna Madhani', 2],
         ['Abhishek & Shikha Jain', 4],
@@ -212,6 +234,10 @@ const NameSelector = () => {
     // Dev mode: off by default (and after every refresh). When off, the page only lets
     // you draw, see the winners/history/names, and press Reset Raffle Count.
     const [devMode, setDevMode] = React.useState(false);
+    const [devPrompt, setDevPrompt] = React.useState(false);   // password box open?
+    const [devInput, setDevInput] = React.useState('');
+    const [devError, setDevError] = React.useState('');
+    const [devChecking, setDevChecking] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [isSpinning, setIsSpinning] = React.useState(false);
     const [singleName, setSingleName] = React.useState('');
@@ -494,7 +520,34 @@ const handleFileUpload = (event) => {
         }
     };
 
+    // Turning dev mode ON needs the dev password; turning it OFF doesn't.
+    const submitDevPassword = async () => {
+        if (!devInput || devChecking) return;
+        if (!(window.crypto && window.crypto.subtle)) {
+            setDevError('This page must be opened over https to check the password.');
+            return;
+        }
+        setDevChecking(true);
+        const hash = await hashPassword('dev', devInput);
+        setDevChecking(false);
+        if (hash === DEV_PASSWORD_HASH) {
+            setDevMode(true);
+            setDevPrompt(false);
+            setDevInput('');
+            setDevError('');
+        } else {
+            setDevError('Incorrect password.');
+        }
+    };
+
     const toggleDevMode = () => {
+        if (!devMode) {
+            // Open / close the password box instead of switching on straight away
+            setDevPrompt(!devPrompt);
+            setDevInput('');
+            setDevError('');
+            return;
+        }
         if (devMode) {
             // Leaving dev mode: drop any half-finished edits
             setSearchTerm('');
@@ -503,7 +556,7 @@ const handleFileUpload = (event) => {
             setSingleName('');
             setRepeatCount(1);
         }
-        setDevMode(!devMode);
+        setDevMode(false);
     };
 
     const toggleSelectForDelete = (name) => {
@@ -913,13 +966,88 @@ const handleFileUpload = (event) => {
                 className: devMode
                     ? "px-3 py-1 bg-purple-700 text-white rounded-md text-xs font-semibold transition-colors"
                     : "px-3 py-1 bg-gray-200 text-gray-600 rounded-md text-xs hover:bg-gray-300 transition-colors"
-            }, devMode ? 'Dev Mode: ON' : 'Dev Mode: OFF')
+            }, devMode ? 'Dev Mode: ON' : 'Dev Mode: OFF'),
+            !devMode && devPrompt && React.createElement('div', { className: "mt-3 mx-auto max-w-xs p-3 rounded-lg bg-white bg-opacity-90 shadow" },
+                React.createElement('input', {
+                    type: 'password',
+                    value: devInput,
+                    autoFocus: true,
+                    onChange: (e) => { setDevInput(e.target.value); setDevError(''); },
+                    onKeyDown: (e) => e.key === 'Enter' && submitDevPassword(),
+                    placeholder: 'Dev password',
+                    className: "w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2"
+                }),
+                devError && React.createElement('p', { className: "text-xs text-red-600 mb-2" }, devError),
+                React.createElement('div', { className: "flex gap-2 justify-center" },
+                    React.createElement('button', {
+                        onClick: submitDevPassword,
+                        disabled: !devInput || devChecking,
+                        className: "px-3 py-1 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700 disabled:bg-gray-400"
+                    }, devChecking ? 'Checking...' : 'Unlock'),
+                    React.createElement('button', {
+                        onClick: () => { setDevPrompt(false); setDevInput(''); setDevError(''); },
+                        className: "px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300"
+                    }, 'Cancel')
+                )
+            )
         )
     ),
-    React.createElement('div', {
-        style: { position: 'fixed', right: '10px', bottom: '8px', zIndex: 40, padding: '6px 14px', fontSize: '18px', fontWeight: 600, lineHeight: 1.25, textAlign: 'right', color: '#374151', background: 'rgba(255,255,255,0.8)', borderRadius: '12px', pointerEvents: 'none' }
-    }, 'Designed and developed', React.createElement('br'), 'by Bhaaniu Jain')
+    creditFooter
     );
 };
 
-ReactDOM.render(React.createElement(NameSelector), document.getElementById('root'));
+// Asks for the site password every time the page is opened (nothing is remembered).
+const PasswordGate = () => {
+    const [unlocked, setUnlocked] = React.useState(false);
+    const [input, setInput] = React.useState('');
+    const [error, setError] = React.useState('');
+    const [checking, setChecking] = React.useState(false);
+
+    const tryUnlock = async () => {
+        if (!input || checking) return;
+        if (!(window.crypto && window.crypto.subtle)) {
+            setError('This page must be opened over https to check the password.');
+            return;
+        }
+        setChecking(true);
+        const hash = await hashPassword('site', input);
+        setChecking(false);
+        if (hash === SITE_PASSWORD_HASH) {
+            setError('');
+            setInput('');
+            setUnlocked(true);
+        } else {
+            setError('Incorrect password.');
+        }
+    };
+
+    if (unlocked) return React.createElement(NameSelector);
+
+    return React.createElement(React.Fragment, null,
+        React.createElement('div', {
+            className: "w-full max-w-sm mx-auto p-6 rounded-lg bg-white bg-opacity-90 shadow-lg text-center",
+            style: { marginTop: '20vh' }
+        },
+            React.createElement('h1', { className: "text-xl font-bold text-gray-800 mb-1" }, 'JSGD Fundraising Dinner Raffle'),
+            React.createElement('p', { className: "text-sm text-gray-600 mb-4" }, 'Enter password to continue'),
+            React.createElement('input', {
+                type: 'password',
+                value: input,
+                autoFocus: true,
+                onChange: (e) => { setInput(e.target.value); setError(''); },
+                onKeyDown: (e) => e.key === 'Enter' && tryUnlock(),
+                placeholder: 'Password',
+                className: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
+            }),
+            error && React.createElement('p', { className: "text-sm text-red-600 mb-3" }, error),
+            React.createElement('button', {
+                onClick: tryUnlock,
+                disabled: !input || checking,
+                className: "w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:bg-gray-400 font-semibold"
+            }, checking ? 'Checking...' : 'Unlock')
+        ),
+        creditFooter
+    );
+};
+
+ReactDOM.render(React.createElement(PasswordGate), document.getElementById('root'));
