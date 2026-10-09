@@ -179,6 +179,17 @@ const DEFAULT_NAME_ENTRIES = [
         ['Vivek & Sheetal Agarwal', 4]
 ];
 
+// Builds the starting list from DEFAULT_NAME_ENTRIES: tidies stray spaces inside names
+// and leaves out anyone with 0 tickets (so they never get a wheel slice).
+const buildDefaultMap = () => {
+    const map = new Map();
+    DEFAULT_NAME_ENTRIES.forEach(([rawName, count]) => {
+        const name = rawName.replace(/\s+/g, ' ').trim();
+        if (name && count > 0) map.set(name, (map.get(name) || 0) + count);
+    });
+    return map;
+};
+
 // Main Component
 const NameSelector = () => {
 
@@ -191,13 +202,16 @@ const NameSelector = () => {
         } catch (error) {
             console.error('Failed to load saved names, using defaults:', error);
         }
-        return new Map(DEFAULT_NAME_ENTRIES);
+        return buildDefaultMap();
     });
     const wheelRef = React.useRef(null);
     const [ghost, setGhost] = React.useState(null);
     const [pendingSpin, setPendingSpin] = React.useState(null);
     const [selectedName, setSelectedName] = React.useState('');
     const [newName, setNewName] = React.useState('');
+    // Dev mode: off by default (and after every refresh). When off, the page only lets
+    // you draw, see the winners/history/names, and press Reset Raffle Count.
+    const [devMode, setDevMode] = React.useState(false);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [isSpinning, setIsSpinning] = React.useState(false);
     const [singleName, setSingleName] = React.useState('');
@@ -405,9 +419,11 @@ const handleFileUpload = (event) => {
                 setSelectedName('');
                 // Clear file input
                 event.target.value = '';
-                if (skipped.length > 0) {
-                    alert(`Imported ${newMap.size} names. Left out ${skipped.length} with no ticket number: ` +
-                        skipped.slice(0, 5).join(', ') + (skipped.length > 5 ? ', ...' : ''));
+                // Only report names that never got a valid ticket number anywhere in the file
+                const leftOut = [...new Set(skipped)].filter(n => !newMap.has(n));
+                if (leftOut.length > 0) {
+                    alert(`Imported ${newMap.size} names. Left out ${leftOut.length} with no ticket number: ` +
+                        leftOut.slice(0, 5).join(', ') + (leftOut.length > 5 ? ', ...' : ''));
                 }
             } else {
                 alert('No valid names found in the Excel file.');
@@ -458,7 +474,7 @@ const handleFileUpload = (event) => {
     // Puts the ticket list back to the default counts. Draw history is left alone.
     const resetRaffleCount = () => {
         if (window.confirm('Reset the raffle names and ticket counts back to the default list? Your draw history will be kept.')) {
-            setNameMap(new Map(DEFAULT_NAME_ENTRIES));
+            setNameMap(buildDefaultMap());
             setGhost(null);
             setSelectedForDelete(new Set());
         }
@@ -466,7 +482,7 @@ const handleFileUpload = (event) => {
 
     const resetToDefaults = () => {
         if (window.confirm('Reset everything to the default name list? This will erase your current names, draw history, and any saved changes. This action cannot be undone.')) {
-            setNameMap(new Map(DEFAULT_NAME_ENTRIES));
+            setNameMap(buildDefaultMap());
             setGhost(null);
             setDrawHistory([]);
             setSelectedName('');
@@ -476,6 +492,18 @@ const handleFileUpload = (event) => {
             setRepeatCount(1);
             setSelectedForDelete(new Set());
         }
+    };
+
+    const toggleDevMode = () => {
+        if (devMode) {
+            // Leaving dev mode: drop any half-finished edits
+            setSearchTerm('');
+            setSelectedForDelete(new Set());
+            setNewName('');
+            setSingleName('');
+            setRepeatCount(1);
+        }
+        setDevMode(!devMode);
     };
 
     const toggleSelectForDelete = (name) => {
@@ -576,7 +604,7 @@ const handleFileUpload = (event) => {
                     React.createElement(Shuffle, { className: "mr-2", size: 24 }),
                     isSpinning ? `Drawing Raffle #${drawHistory.length + 1}...` : `Draw Raffle #${drawHistory.length + 1}`
                 ),
-                getTotalNames() > 0 && React.createElement('p', { className: "text-sm text-gray-600 mt-2" },
+                devMode && getTotalNames() > 0 && React.createElement('p', { className: "text-sm text-gray-600 mt-2" },
                     `Ready to draw from ${getTotalNames()} entries • Press Ctrl+Enter`
                 ),
 
@@ -601,7 +629,7 @@ const handleFileUpload = (event) => {
                         React.createElement(History, { className: "mr-2", size: 20 }),
                         `Draw History (${drawHistory.length} draws)`
                     ),
-                    React.createElement('div', { className: "flex items-center gap-2" },
+                    devMode && React.createElement('div', { className: "flex items-center gap-2" },
                         React.createElement('button', {
                             onClick: () => downloadDrawHistory(drawHistory),
                             className: "px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center text-sm transition-colors"
@@ -637,12 +665,12 @@ const handleFileUpload = (event) => {
                     )
                 ),
                 React.createElement('p', { className: "text-xs text-gray-700 mt-2" }, 
-                    'Click Download button above to save history • Showing last 50 draws'
+                    devMode ? 'Click Download button above to save history • Showing last 50 draws' : 'Showing last 50 draws'
                 )
             ),
 
-        // Search Section
-        React.createElement('div', { className: "mb-6 p-4 rounded-lg transparent-section" },
+        // Search Section (dev mode only)
+        devMode && React.createElement('div', { className: "mb-6 p-4 rounded-lg transparent-section" },
             React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
                 React.createElement(Search, { className: "mr-2", size: 20 }),
                 'Search & Edit Names'
@@ -694,20 +722,20 @@ const handleFileUpload = (event) => {
         React.createElement('div', { className: "mb-6" },
             React.createElement('div', { className: "mb-3" },
                 React.createElement('div', { className: "flex gap-2 flex-wrap mb-3" },
-                    nameMap.size > 0 && React.createElement('button', {
+                    devMode && nameMap.size > 0 && React.createElement('button', {
                         onClick: selectAllForDelete,
                         className: "px-2 py-1 bg-gray-600 text-white rounded-md hover:bg-gray-700 flex items-center text-xs transition-colors"
                     },
                         selectedForDelete.size === nameMap.size ? 'Deselect All' : 'Select All'
                     ),
-                    selectedForDelete.size > 0 && React.createElement('button', {
+                    devMode && selectedForDelete.size > 0 && React.createElement('button', {
                         onClick: deleteMassSelected,
                         className: "px-3 py-1 bg-orange-600 text-white rounded-md hover:bg-orange-700 flex items-center text-sm transition-colors"
                     },
                         React.createElement(Trash2, { size: 14, className: "mr-1" }),
                         `Delete ${selectedForDelete.size}`
                     ),
-                    React.createElement('button', {
+                    devMode && React.createElement('button', {
                         onClick: exportToExcel,
                         className: "px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center text-sm transition-colors",
                         disabled: nameMap.size === 0
@@ -715,7 +743,7 @@ const handleFileUpload = (event) => {
                         React.createElement(Download, { size: 14, className: "mr-1" }),
                         'Export'
                     ),
-                    React.createElement('button', {
+                    devMode && React.createElement('button', {
                         onClick: clearAllNames,
                         className: "px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center text-sm transition-colors",
                         disabled: nameMap.size === 0
@@ -732,7 +760,7 @@ const handleFileUpload = (event) => {
                     )
                 ),
                 React.createElement('h2', { className: "text-lg font-semibold" }, 
-                    `Current Names (${nameMap.size} unique, ${getTotalNames()} raffle tickets)`
+                    devMode ? `Current Names (${nameMap.size} unique, ${getTotalNames()} raffle tickets)` : 'Current Names'
                 )
             ),
             
@@ -747,15 +775,17 @@ const handleFileUpload = (event) => {
                                 className: `px-3 py-1.5 rounded-lg text-sm flex justify-between items-center transition-colors transparent-box ${selectedForDelete.has(name) ? 'bg-red-100 bg-opacity-50' : ''}`
                             },
                                 React.createElement('div', { className: "flex items-center gap-2" },
-                                    React.createElement('input', {
+                                    devMode && React.createElement('input', {
                                         type: 'checkbox',
                                         checked: selectedForDelete.has(name),
                                         onChange: () => toggleSelectForDelete(name),
                                         className: "rounded"
                                     }),
-                                    React.createElement('span', { className: "font-medium" }, `${name} (${count} raffle ticket${count === 1 ? '' : 's'})`)
+                                    React.createElement('span', { className: "font-medium" },
+                                        devMode ? `${name} (${count} raffle ticket${count === 1 ? '' : 's'})` : name
+                                    )
                                 ),
-                                React.createElement('div', { className: "flex items-center gap-2" },
+                                devMode && React.createElement('div', { className: "flex items-center gap-2" },
                                     React.createElement('button', {
                                         onClick: () => updateNameQuantity(name, count - 1),
                                         className: "p-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors",
@@ -783,11 +813,11 @@ const handleFileUpload = (event) => {
                         )
                     )
                 ) :
-                React.createElement('p', { className: "text-gray-500 text-center py-8" }, 'No names available. Upload a file or add names manually.')
+                React.createElement('p', { className: "text-gray-500 text-center py-8" }, devMode ? 'No names available. Upload a file or add names manually.' : 'No names left. Press Reset Raffle Count to start over.')
         ),
 
-        // Add Names (upload + manual entry)
-        React.createElement('div', { className: "mb-6 p-4 rounded-lg transparent-section" },
+        // Add Names (upload + manual entry) - dev mode only
+        devMode && React.createElement('div', { className: "mb-6 p-4 rounded-lg transparent-section" },
             React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
                 React.createElement(Upload, { className: "mr-2", size: 20 }),
                 'Upload Excel File'
@@ -801,7 +831,7 @@ const handleFileUpload = (event) => {
             React.createElement('p', { className: "text-sm text-gray-600 mt-2" }, 'Upload an Excel file (.xlsx or .xls) containing names')
         ),
 
-        React.createElement('div', { className: "mb-6 p-4 rounded-lg transparent-section" },
+        devMode && React.createElement('div', { className: "mb-6 p-4 rounded-lg transparent-section" },
             React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center" },
                 React.createElement(Plus, { className: "mr-2", size: 20 }),
                 'Add Names Manually'
@@ -863,7 +893,8 @@ const handleFileUpload = (event) => {
                 React.createElement('p', { className: "text-xs text-gray-500 mt-1" }, 'Separate with commas, semicolons, or new lines')
             )
         ),
-        React.createElement('div', { className: "mt-8 text-center" },
+        // Reset to Default - dev mode only
+        devMode && React.createElement('div', { className: "mt-8 text-center" },
             React.createElement('button', {
                 onClick: resetToDefaults,
                 className: "px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 inline-flex items-center text-sm transition-colors"
@@ -872,6 +903,17 @@ const handleFileUpload = (event) => {
                 'Reset to Default'
             ),
             React.createElement('p', { className: "text-xs text-gray-600 mt-1" }, 'Clears everything (names, draw history) back to the original state')
+        ),
+
+        // Dev mode toggle - very bottom of the page
+        React.createElement('div', { className: "mt-6 text-center" },
+            React.createElement('button', {
+                onClick: toggleDevMode,
+                'aria-pressed': devMode,
+                className: devMode
+                    ? "px-3 py-1 bg-purple-700 text-white rounded-md text-xs font-semibold transition-colors"
+                    : "px-3 py-1 bg-gray-200 text-gray-600 rounded-md text-xs hover:bg-gray-300 transition-colors"
+            }, devMode ? 'Dev Mode: ON' : 'Dev Mode: OFF')
         )
     ),
     React.createElement('div', {
