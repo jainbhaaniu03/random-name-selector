@@ -12,7 +12,7 @@ const STORAGE_KEYS = {
 // passwords). To change a password, open set-password.html, pick Site or Dev,
 // type the new password, and paste the hash it shows below.
 // ---------------------------------------------------------------------------
-const SITE_PASSWORD_HASH = '6a89264f1200b0e5fa6eacbe729fb6a50a0172cae7cb49bf8eadc2179a5db5a3'; // temporary site password: Raffle-Temp-2026 (change it!)
+const SITE_PASSWORD_HASH = '9384fec2176792d346cb6b037366ee46a685aaa07451d68999cce02a7c94007e'; // temporary site password: Raffle-Temp-2026 (change it!)
 const DEV_PASSWORD_HASH = 'fe7fe6c415ae15bfe3afe3b1491567f6dc70db3459e447498cd09ede22211dba';  // temporary dev password: Dev-Temp-2026 (change it!)
 
 const hashPassword = async (kind, text) => {
